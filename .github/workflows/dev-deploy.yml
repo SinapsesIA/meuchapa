@@ -36,7 +36,14 @@ jobs:
         run: bun run build:dev
 
       # Step 5: Deploy to Cloud Storage DEV Bucket
+      - name: Authenticate to Google Cloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_DEV_SERVICE_ACCOUNT_KEY }}'
+
       - name: Deploy to Cloud Storage DEV Bucket
+        # GOOGLE_APPLICATION_CREDENTIALS might not be strictly needed here if google-github-actions/auth sets up the context
+        # But it doesn't hurt to keep it for direct gsutil use
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_DEV_SERVICE_ACCOUNT_KEY }}
         run: |
