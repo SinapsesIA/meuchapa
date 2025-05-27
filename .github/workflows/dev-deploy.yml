@@ -28,7 +28,7 @@ jobs:
 
       # Step 3: Build the project for development
       - name: Build the project
-        run: bun build:dev
+        run: build:dev
 
       # Step 4: Deploy to Cloud Storage DEV Bucket
       - name: Deploy to Cloud Storage DEV Bucket

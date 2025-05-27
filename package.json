@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "bun vite",
     "build:dev": "vite build --mode dev",
-    "build:qa": "vite build --mode qa",
-    "build:prod": "vite build --mode prod",
-    "preview": "vite preview --port 5000",
+    "build:qa": "bun build --mode qa",
+    "build:prod": "bun build --mode prod",
+    "preview": "bun preview --port 5000",
     "qa": "bun vite --mode qa",
     "prod": "bun vite --mode prod",
     "lint": "eslint ."
