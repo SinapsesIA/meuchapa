@@ -14,23 +14,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Install and verify Bun
-      - name: Install and verify Bun
+      # Step 2: Install Bun and add to PATH
+      - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
-          export PATH="$HOME/.bun/bin:$PATH"
-          bun --version
+          # This line adds Bun's bin directory to GITHUB_PATH for subsequent steps
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+      
+      # It's good practice to verify the command is available in a new step
+      - name: Verify Bun installation
+        run: bun --version
 
+      # Step 3: Install dependencies
+      # No need to export PATH here, bun should be available globally for the job
       - name: Install dependencies
-        run: |
-          export PATH="$HOME/.bun/bin:$PATH"
-          bun install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
-      # Step 3: Build the project for development
+      # Step 4: Build the project for development
+      # bun command should now be found
       - name: Build the project
         run: bun run build:dev
 
-      # Step 4: Deploy to Cloud Storage DEV Bucket
+      # Step 5: Deploy to Cloud Storage DEV Bucket
       - name: Deploy to Cloud Storage DEV Bucket
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_DEV_SERVICE_ACCOUNT_KEY }}
