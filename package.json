@@ -5,10 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "bun vite",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build:dev": "vite build --mode dev",
+    "build:qa": "vite build --mode qa",
+    "build:prod": "vite build --mode prod",
+    "preview": "vite preview --port 5000",
+    "qa": "bun vite --mode qa",
+    "prod": "bun vite --mode prod",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

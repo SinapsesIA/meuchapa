@@ -1,0 +1,38 @@
+name: Deploy to DEV
+
+on:
+  push:
+    branches:
+      - DEVELOP
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Install and verify Bun
+      - name: Install and verify Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "export PATH=\"$HOME/.bun/bin:\$PATH\"" >> $GITHUB_ENV
+          source $GITHUB_ENV
+          bun --version # Verify Bun installation
+
+      # Step 3: Install project dependencies
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Step 4: Build the project for development
+      - name: Build the project
+        run: bun build:dev
+
+      # Step 5: Deploy to Cloud Storage DEV Bucket
+      - name: Deploy to Cloud Storage DEV Bucket
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_DEV_SERVICE_ACCOUNT_KEY }}
+        run: |
+          gsutil -m rsync -r ./dist gs://meuchapa-dev-frontend
