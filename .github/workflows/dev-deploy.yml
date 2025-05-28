@@ -18,33 +18,28 @@ jobs:
       - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
-          # This line adds Bun's bin directory to GITHUB_PATH for subsequent steps
           echo "$HOME/.bun/bin" >> $GITHUB_PATH
-      
-      # It's good practice to verify the command is available in a new step
+
       - name: Verify Bun installation
         run: bun --version
 
-      # Step 3: Install dependencies
-      # No need to export PATH here, bun should be available globally for the job
+      # Step 3: Install dependencies and build
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # Step 4: Build the project for development
-      # bun command should now be found
       - name: Build the project
         run: bun run build:dev
 
-      # Step 5: Deploy to Cloud Storage DEV Bucket
+      # Step 4: Authenticate to Google Cloud
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.GCP_DEV_SERVICE_ACCOUNT_KEY }}'
 
+      # Step 5: Deploy to Cloud Storage DEV Bucket
       - name: Deploy to Cloud Storage DEV Bucket
-        # GOOGLE_APPLICATION_CREDENTIALS might not be strictly needed here if google-github-actions/auth sets up the context
-        # But it doesn't hurt to keep it for direct gsutil use
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_DEV_SERVICE_ACCOUNT_KEY }}
         run: |
+          gcloud auth activate-service-account --key-file="${{ secrets.GCP_DEV_SERVICE_ACCOUNT_KEY }}"
           gsutil -m rsync -r ./dist gs://meuchapa-dev-frontend
