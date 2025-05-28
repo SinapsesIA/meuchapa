@@ -52,3 +52,21 @@ jobs:
       - name: Deploy to Cloud Storage DEV Bucket
         run: |
           gcloud storage rsync -r ./dist gs://${{ secrets.GCP_DEV_BUCKET_NAME }}
+
+      # Step 8: Make bucket public and configure website
+      - name: Make bucket public and configure website
+        run: |
+          gsutil iam ch allUsers:objectViewer gs://${{ secrets.GCP_DEV_BUCKET_NAME }}
+          gsutil web set -m index.html gs://${{ secrets.GCP_DEV_BUCKET_NAME }}
+
+      # Step 9: Set CORS configuration
+      - name: Set CORS configuration
+        run: |
+          echo '[{"origin":["*"],"method":["GET","HEAD","OPTIONS"],"responseHeader":["Content-Type"],"maxAgeSeconds":3600}]' > cors.json
+          gsutil cors set cors.json gs://${{ secrets.GCP_DEV_BUCKET_NAME }}
+          rm cors.json
+
+      # Step 10: Enable uniform bucket-level access
+      - name: Enable uniform bucket-level access
+        run: |
+          gsutil uniformbucketlevelaccess set on gs://${{ secrets.GCP_DEV_BUCKET_NAME }}
