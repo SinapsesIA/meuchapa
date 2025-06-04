@@ -66,12 +66,13 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          ref: qa
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: prod
+          branch: qa
           base: prod
           title: 'chore: merge qa into prod'
           body: |
