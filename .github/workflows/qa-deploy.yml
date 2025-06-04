@@ -56,27 +56,3 @@ jobs:
       - name: Deploy to Cloud Storage DEV Bucket
         run: |
           gcloud storage rsync -r ./dist gs://${{ secrets.GCP_QA_BUCKET_NAME }}
-
-  create-prod-pr:
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: qa
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: qa
-          base: prod
-          title: 'chore: merge qa into prod'
-          body: |
-            Automated PR to merge qa into prod branch
-
-            This PR was automatically created by the CI/CD pipeline.
-          labels: automated-pr
