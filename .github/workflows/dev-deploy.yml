@@ -1,5 +1,9 @@
 name: Deploy to DEV
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   push:
     branches:
@@ -52,3 +56,26 @@ jobs:
       - name: Deploy to Cloud Storage DEV Bucket
         run: |
           gcloud storage rsync -r ./dist gs://${{ secrets.GCP_DEV_BUCKET_NAME }}
+
+  create-qa-pr:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: qa
+          base: qa
+          title: 'chore: merge develop into qa'
+          body: |
+            Automated PR to merge develop into qa branch
+
+            This PR was automatically created by the CI/CD pipeline.
+          labels: automated-pr
